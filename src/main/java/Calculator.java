@@ -28,9 +28,8 @@ public class Calculator {
                     inputDouble = in.nextDouble();
                     if(inputDouble < 0){
                         System.out.printf("Введено число меньше нуля. Введите стоимость товара \"%s\" ещё раз.\n", inputString);
-                        continue;
                     }
-                    break;
+                    else break;
                 }
                 else if(in.hasNext()){
                     System.out.printf("Это не число. Введите стоимость товара \"%s\" ещё раз.\n", inputString);
@@ -54,11 +53,15 @@ public class Calculator {
             sumAllPrices += prices[i];
         }
         double priceForEach = sumAllPrices / guestsNumber;
-        String rouble = switch ((int)priceForEach % 10){
-            case 1 -> "рубль";
-            case 2, 3, 4 -> "рубля";
-            default -> "рублей";
-        };
+        String rouble;
+        if((int)priceForEach <= 14 && (int)priceForEach >= 11) rouble = "рублей";
+        else {
+            rouble = switch ((int)priceForEach % 10){
+                case 1 -> "рубль";
+                case 2, 3, 4 -> "рубля";
+                default -> "рублей";
+            };
+        }
         System.out.printf("С каждого %.2f %s.\n", priceForEach, rouble);
     }
 

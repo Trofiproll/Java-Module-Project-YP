@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 public class Calculator {
     private int guestsNumber;
+    private double totalSum = 0;
     private ArrayList<String> items;
     private ArrayList<Double> prices;
 
@@ -42,6 +43,7 @@ public class Calculator {
                     inputPrice = in.nextDouble();
                     items.add(inputItem);
                     prices.add(inputPrice);
+                    totalSum += inputPrice;
                     System.out.printf("Товар '%s' по цене %.2f успешно добавлен\n", inputItem, inputPrice);
                     inputItem = "";
                 }
@@ -51,14 +53,12 @@ public class Calculator {
     }
 
     void calcutate(){
-        double sumAllPrices = 0;
         System.out.println("\nДобавленные товары:");
         for(int i = 0; i < items.size(); i++){
             System.out.printf("%s %.2f\n", items.get(i), prices.get(i));
-            sumAllPrices += prices.get(i);
         }
-        System.out.printf("\nВсего на %.2f %s.\n", sumAllPrices, rouble(sumAllPrices));
-        double priceForEach = sumAllPrices / guestsNumber;
+        System.out.printf("\nВсего на %.2f %s.\n", totalSum, rouble(totalSum));
+        double priceForEach = totalSum / guestsNumber;
         System.out.printf("\nС каждого %.2f %s.\n", priceForEach, rouble(priceForEach));
     }
 

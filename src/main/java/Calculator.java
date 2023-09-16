@@ -1,79 +1,73 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Calculator {
     private int guestsNumber;
-    private int productsNumber;
-    private double[] prices;
-    private String[] products;
+    private ArrayList<String> items;
+    private ArrayList<Double> prices;
+
 
 
     Calculator(int guestsNumber){
         this.guestsNumber = guestsNumber;
-        productsNumber = 0;
-        prices = new double[10];
-        products = new String[10];
-        System.out.printf("Счёт на %d человек создан!\nДобавляйте товары в формате \"Товар рубли.копейки\". Для завершения добавления введите \"Завершить\".\n", guestsNumber);
+        items = new ArrayList<>();
+        prices = new ArrayList<>();
+        String persons;
+        if(guestsNumber >= 11 && guestsNumber <= 14) persons = "человек";
+        else persons = switch (guestsNumber%10){
+            case 1,2,3,4 -> "человека";
+            default -> "человек";
+        };
+        System.out.printf("Счёт на %d %s создан!\n" +
+                "Добавляйте товары в формате \"<Товар> <стоимость>\".\n" +
+                "Название товара может состоять из нескольких слов.\n" +
+                "Для завершения добавления введите \"Завершить\".\n\n", guestsNumber, persons);
     }
 
     void addProducts(){
         Scanner in = new Scanner(System.in);
-        String inputString = in.next();
-        double inputDouble;
-
-        while(!inputString.equalsIgnoreCase("Завершить")){
-            if(productsNumber >= products.length) update();
-
-            while(true) {
-                if(in.hasNextDouble()){
-                    inputDouble = in.nextDouble();
-                    if(inputDouble < 0){
-                        System.out.printf("Введено число меньше нуля. Введите стоимость товара \"%s\" ещё раз.\n", inputString);
-                    }
-                    else break;
-                }
-                else if(in.hasNext()){
-                    System.out.printf("Это не число. Введите стоимость товара \"%s\" ещё раз.\n", inputString);
-                    in.next();
+        String inputItem = "";
+        double inputPrice;
+        while(true){
+            while(in.hasNext() && !in.hasNextDouble()){
+                if(inputItem.isEmpty()) inputItem += in.next();
+                else inputItem += ' ' + in.next();
+                if(inputItem.equalsIgnoreCase("завершить")){
+                    System.out.println("Добавление товаров завершено");
+                    return;
                 }
             }
-
-            products[productsNumber] = inputString;
-            prices[productsNumber++] = inputDouble;
-            System.out.printf("Товар \"%s\" успешно добавлен.\n", products[productsNumber - 1]);
-            inputString = in.next();
+            if(in.hasNextDouble()){
+                if(!inputItem.isEmpty()){
+                    inputPrice = in.nextDouble();
+                    items.add(inputItem);
+                    prices.add(inputPrice);
+                    System.out.printf("Товар '%s' по цене %.2f успешно добавлен\n", inputItem, inputPrice);
+                    inputItem = "";
+                }
+                else in.next();
+            }
         }
-        System.out.println("Добавление товаров завершено.\n");
     }
 
     void calcutate(){
         double sumAllPrices = 0;
-        System.out.println("Добавленные товары:");
-        for(int i = 0; i < productsNumber; i++){
-            System.out.printf("%s %.2f\n", products[i], prices[i]);
-            sumAllPrices += prices[i];
+        System.out.println("\nДобавленные товары:");
+        for(int i = 0; i < items.size(); i++){
+            System.out.printf("%s %.2f\n", items.get(i), prices.get(i));
+            sumAllPrices += prices.get(i);
         }
+        System.out.printf("\nВсего на %.2f %s.\n", sumAllPrices, rouble(sumAllPrices));
         double priceForEach = sumAllPrices / guestsNumber;
-        String rouble;
-        if((int)priceForEach <= 14 && (int)priceForEach >= 11) rouble = "рублей";
-        else {
-            rouble = switch ((int)priceForEach % 10){
-                case 1 -> "рубль";
-                case 2, 3, 4 -> "рубля";
-                default -> "рублей";
-            };
-        }
-        System.out.printf("С каждого %.2f %s.\n", priceForEach, rouble);
+        System.out.printf("\nС каждого %.2f %s.\n", priceForEach, rouble(priceForEach));
     }
 
-
-    private void update(){
-        double[] pricesCopy = new double[prices.length];
-        String[] productsCopy = new String[products.length];
-        System.arraycopy(prices, 0, pricesCopy, 0, prices.length);
-        System.arraycopy(products, 0, productsCopy, 0, products.length);
-        prices = new double[pricesCopy.length * 2];
-        products = new String[productsCopy.length * 2];
-        System.arraycopy(pricesCopy, 0, prices, 0, pricesCopy.length);
-        System.arraycopy(productsCopy, 0, products, 0, productsCopy.length);
+    private String rouble(double price){
+        if(price > 10 && price < 15) return "рублей";
+        else return switch ((int)price % 10){
+            case 1 -> "рубль";
+            case 2, 3, 4 -> "рубля";
+            default -> "рублей";
+        };
     }
 }
